@@ -33,7 +33,7 @@ Installation
 
 You can install this custom package with::
 
-     pip install git+https://github.com/OGGM/initialization.git
+     pip install git+https://github.com/bowenbelongstonature/initialization.git
 
 However, what you'd probably like to do is to `fork <https://help.github.com/articles/fork-a-repo/>`_ this repository and use
 it as a template for your own project. You can install it locally with::
