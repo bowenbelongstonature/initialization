@@ -15,7 +15,74 @@ from oggm import workflow, tasks, utils, cfg
 from oggm.core.inversion import mass_conservation_inversion
 from oggm.core.flowline import FileModel, FluxBasedModel
 
+def time_to_stable(gdirs, ys):
+    """
+    how long it will take for glaciers to stable in terms of volume change
+    under the climatology of baseline-climate file around a center year 'ys'.
+    the results can be different for different glaceirs.
+    """
+    p = Pool()
+    p.map(partial(_single_time_to_stable, ys=ys),gdirs)
+    p.close()
+    p.join()
 
+def _single_time_to_stable(gdir, ys):
+    """
+    how long it will take for a glacier to stable in terms of volume change
+    under the climatology of baseline-climate file around a center year 'ys'.
+    """
+    if os.path.isfile(gdir.dir+'/model_flowlines.pkl'):
+        fls = gdir.read_pickle('model_flowlines')
+        year = 100
+        while year<10001:
+            
+            # first and second run to find the "years"
+            if year == 100:
+                model1 = tasks.run_random_climate(gdir, nyears=year, y0=ys, seed=1,init_model_fls=fls,
+                                                     output_filesuffix='_{}'.format(str(year)))
+                model2 = tasks.run_random_climate(gdir, nyears=100, y0=ys, seed=1,
+                                                        init_model_filesuffix='_{}'.format(str(year)),
+                                                     output_filesuffix='_{}'.format(str(year+100)))
+                rp1 = gdir.get_filepath('model_geometry', filesuffix='_{}'.format(str(year)))
+                model_1 = FileModel(rp1)
+                rp2 = gdir.get_filepath('model_geometry', filesuffix='_{}'.format(str(year+100)))
+                model_2 = FileModel(rp2)
+                
+                year += 100
+                # if the area/volume change is less than 5% in 100 years, we think it's stable
+                if np.abs(model_2.volume_m3_ts()[99]-model_1.volume_m3_ts()[99])/\
+                (model_1.volume_m3_ts()[99]+0.000001) <0.05:
+                    break
+            # further runs to find the "years"
+            elif :
+                model2 = tasks.run_random_climate(gdir, nyears=100, y0=ys, seed=1,
+                                                  init_model_filesuffix='_{}'.format(str(year)),
+                                                     output_filesuffix='_{}'.format(str(year+100)))
+                rp1 = gdir.get_filepath('model_geometry', filesuffix='_{}'.format(str(year)))
+                model_1 = FileModel(rp1)
+                rp2 = gdir.get_filepath('model_geometry', filesuffix='_{}'.format(str(year+100)))
+                model_2 = FileModel(rp2)
+
+                year += 100
+                # if the area/volume change is less than 5% in 100 years, we think it's stable
+                if np.abs(model_2.volume_m3_ts()[99]-model_1.volume_m3_ts()[99])/\
+                (model_1.volume_m3_ts()[99]+0.000001) <0.05:
+                    break
+                    
+        # add years it needs for volume stable in diagnostics.json,delete intermediate files,
+        # we added 100 years more to the result to make sure glacier volume is stabler,
+        # if year is over 10000, we do nothing with the diagnostics.json
+  
+        for file in os.listdir(gdir.dir):
+            if file.startswith('model_geometry') and file.endswith('00.nc'):
+                os.remove(os.path.join(gdir.dir,file))
+            if file.startswith('model_diagnostics') and file.endswith('00.nc'):
+                os.remove(os.path.join(gdir.dir,file))
+                    
+        if year<10001:
+            gdir.add_to_diagnostics('years_to_stable', year+100)
+            
+       
 def _find_extrema(ts):
     """
     Needed to determine t_stag. Trajectories will be smoothed and
@@ -128,7 +195,7 @@ def calibration_runs(gdirs, ys ):
     pool.close()
     pool.join()
 
-def find_mb_offset(gdir, ys, a=-2000, b=2000):
+def find_mb_offset(gdir, ys, a=-1000, b=1000):
 
 
     try:
@@ -156,7 +223,7 @@ def find_mb_offset(gdir, ys, a=-2000, b=2000):
             df = df.append(pd.Series({'mb_offset': mb_offset, 'area_diff': diff, 'error':error}),
                            ignore_index=True)
 
-            if (abs(diff) < 1e-4) or bounds[1] - bounds[0] <= 0.25:
+            if (abs(diff) < 1e-3) or bounds[1] - bounds[0] <= 0.25:
                 break
 
             elif diff<0:
