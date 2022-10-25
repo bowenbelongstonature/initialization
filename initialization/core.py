@@ -105,7 +105,7 @@ def _single_calibration_run(gdir, mb_offset, ys,ye):
 
     # check, if this model_run already exists
     try:
-        rp = gdir.get_filepath('model_run', filesuffix='_calibration_past_'+ str(mb_offset))
+        rp = gdir.get_filepath('model_geometry', filesuffix='_calibration_past_'+ str(mb_offset))
         model = FileModel(rp)
 
     # otherwise create calibration_run with mb_offset
@@ -123,7 +123,7 @@ def _single_calibration_run(gdir, mb_offset, ys,ye):
             tasks.run_from_climate_data(gdir, ys=ys, ye=ye, init_model_fls=fls,bias=mb_offset,
                                         output_filesuffix='_calibration_past_'+str(mb_offset))
             # return FileModel
-            rp = gdir.get_filepath('model_run',filesuffix='_calibration_past_' + str(mb_offset))
+            rp = gdir.get_filepath('model_geometry',filesuffix='_calibration_past_' + str(mb_offset))
             model = FileModel(rp)
 
         except:
@@ -166,8 +166,8 @@ def _run_to_present(tupel, gdir, ys, ye, mb_offset):
     Run glacier candidates forwards.
     """
     suffix = tupel[0]
-    #path = gdir.get_filepath('model_run', filesuffix=suffix)
-    path = os.path.join(gdir.dir, str(ys), 'model_run' + suffix + '.nc')
+    #path = gdir.get_filepath('model_geometry', filesuffix=suffix)
+    path = os.path.join(gdir.dir, str(ys), 'model_geometry' + suffix + '.nc')
     # does file already exists?
     if not os.path.exists(path):
         try:
@@ -279,8 +279,8 @@ def _run_random_task(tupel, gdir, y0, mb_offset):
     temp_bias = tupel[1]
     fls = gdir.read_pickle('model_flowlines')
     suffix = str(y0) + '_random_'+str(seed) + '_' + str(temp_bias)
-    #path = gdir.get_filepath('model_run', filesuffix=suffix)
-    path = os.path.join(gdir.dir, str(y0),'model_run'+suffix+'.nc')
+    #path = gdir.get_filepath('model_geometry', filesuffix=suffix)
+    path = os.path.join(gdir.dir, str(y0),'model_geometry'+suffix+'.nc')
 
     # does file already exists?
     if not os.path.exists(path):
@@ -308,7 +308,7 @@ def _run_file_model(suffix, gdir, ye):
     """
     Read FileModel and run it until ye
     """
-    rp = gdir.get_filepath('model_run', filesuffix=suffix)
+    rp = gdir.get_filepath('model_geometry', filesuffix=suffix)
     fmod = FileModel(rp)
     fmod.run_until(ye)
     return copy.deepcopy(fmod)
@@ -330,10 +330,10 @@ def identification(gdir, list, ys, ye, n):
     for suffix in list['suffix'].values:
         if i < 10:
             try:
-                rp = gdir.get_filepath('model_run', filesuffix=suffix)
+                rp = gdir.get_filepath('model_geometry', filesuffix=suffix)
                 if not os.path.exists(rp):
                     rp = os.path.join(gdir.dir,str(ys),
-                                      'model_run'+suffix+'.nc')
+                                      'model_geometry'+suffix+'.nc')
                 fmod = FileModel(rp)
                 t = _find_extrema(fmod.volume_m3_ts())
                 if t > t_stag:
@@ -349,10 +349,10 @@ def identification(gdir, list, ys, ye, n):
     df = pd.DataFrame()
     for suffix in list['suffix']:
         try:
-            rp = gdir.get_filepath('model_run', filesuffix=suffix)
+            rp = gdir.get_filepath('model_geometry', filesuffix=suffix)
             if not os.path.exists(rp):
                 rp = os.path.join(gdir.dir, str(ys),
-                                  'model_run' + suffix + '.nc')
+                                  'model_geometry' + suffix + '.nc')
             fmod = FileModel(rp)
             v = pd.DataFrame(fmod.volume_m3_ts()).reset_index()
             v = v[v['time'] >= t_stag]
@@ -371,9 +371,9 @@ def identification(gdir, list, ys, ye, n):
     candidates = candidates.sort_values(['suffix', 'time'])
     candidates['fls_t0'] = None
     for suffix in candidates['suffix'].unique():
-        rp = gdir.get_filepath('model_run', filesuffix=suffix)
+        rp = gdir.get_filepath('model_geometry', filesuffix=suffix)
         if not os.path.exists(rp):
-            rp = os.path.join(gdir.dir, str(ys), 'model_run' + suffix + '.nc')
+            rp = os.path.join(gdir.dir, str(ys), 'model_geometry' + suffix + '.nc')
         fmod = FileModel(rp)
         for i, t in candidates[candidates['suffix'] == suffix]['time'].iteritems():
             fmod.run_until(t)
@@ -471,12 +471,12 @@ def find_possible_glaciers(gdir, y0, ye, n, ex_mod=None, mb_offset=0, delete=Fal
 
         # delete other files
         for file in os.listdir(gdir.dir):
-            if file.startswith('model_run' + (str(y0))):
+            if file.startswith('model_geometry' + (str(y0))):
                 if not file in set(save.values()):
                     os.remove(os.path.join(gdir.dir, file))
 
                     # remove diagnostic file, too
-                    file = file.split('model_run')
+                    file = file.split('model_geometry')
                     file.insert(0, 'model_diagnostics')
                     file = os.path.join(gdir.dir,''.join(file))
                     try:
@@ -491,7 +491,7 @@ def find_possible_glaciers(gdir, y0, ye, n, ex_mod=None, mb_offset=0, delete=Fal
 
         utils.mkdir(os.path.join(gdir.dir, str(y0)), reset=False)
         for file in os.listdir(gdir.dir):
-            if file.startswith('model_run' + (str(y0))):
+            if file.startswith('model_geometry' + (str(y0))):
                 os.rename(os.path.join(gdir.dir, file),
                           os.path.join(gdir.dir, str(y0), file))
             elif file.startswith('model_diagnostics' + (str(y0))):
