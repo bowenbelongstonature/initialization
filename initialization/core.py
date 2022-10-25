@@ -238,7 +238,7 @@ def find_mb_offset(gdir, ys, a=-1000, b=1000):
         df.to_csv(os.path.join(gdir.dir,'experiment_iteration.csv'))
 
         for file in os.listdir(gdir.dir):
-            if file.startswith('model_run_calibration') and file.endswith('.nc') and not file.endswith('_'+str(mb_offset)+'.nc'):
+            if file.startswith('model_geometry_calibration') and file.endswith('.nc') and not file.endswith('_'+str(mb_offset)+'.nc'):
                 os.remove(os.path.join(gdir.dir,file))
             if file.startswith('model_diagnostics_calibration') and file.endswith('.nc') and not file.endswith('_'+str(mb_offset)+'.nc'):
                 os.remove(os.path.join(gdir.dir,file))
@@ -526,9 +526,9 @@ def generation(gdir, y0, mb_offset):
     max_bias = random_run_list['temp_bias'].idxmax()
     max_suffix = random_run_list.loc[max_bias, 'suffix']
 
-    p = gdir.get_filepath('model_run',filesuffix=max_suffix)
+    p = gdir.get_filepath('model_geometry',filesuffix=max_suffix)
     if not os.path.exists(p):
-        p = os.path.join(gdir.dir, str(y0), 'model_run' + max_suffix + '.nc')
+        p = os.path.join(gdir.dir, str(y0), 'model_geometry' + max_suffix + '.nc')
     fmod = FileModel(p)
 
     if not fmod.volume_m3_ts().min() == 0:
@@ -559,11 +559,11 @@ def evaluation(gdir, fls_list, y0, ye, emod, mb_offset, delete):
     pool.join()
 
     df = pd.DataFrame()
-    prefix = 'model_run'+str(y0)+'_past'
+    prefix = 'model_geometry'+str(y0)+'_past'
 
     if emod is None:
         # read experiment
-        ep = gdir.get_filepath('model_run', filesuffix='_synthetic_experiment')
+        ep = gdir.get_filepath('model_geometry', filesuffix='_synthetic_experiment')
         emod = FileModel(ep)
     emod_t = copy.deepcopy(emod)
     emod_t.run_until(ye)
@@ -577,9 +577,9 @@ def evaluation(gdir, fls_list, y0, ye, emod, mb_offset, delete):
 
         try:
             # read past climate model runs and calculate objective
-            rp = gdir.get_filepath('model_run', filesuffix=f)
+            rp = gdir.get_filepath('model_geometry', filesuffix=f)
             if not os.path.exists(rp):
-                rp = os.path.join(gdir.dir, str(y0), 'model_run' + f + '.nc')
+                rp = os.path.join(gdir.dir, str(y0), 'model_geometry' + f + '.nc')
 
             fmod = FileModel(rp)
             fmod_t = copy.deepcopy(fmod)
@@ -692,7 +692,7 @@ def synthetic_experiments_parallel(gdirs, t0, te):
     :return:
     """
     reset = True
-    if os.path.isfile(gdirs[0].get_filepath('model_run', filesuffix='_synthetic_experiment')):
+    if os.path.isfile(gdirs[0].get_filepath('model_geometry', filesuffix='_synthetic_experiment')):
         reset = utils.query_yes_no(
             'Running the function synthetic_experiments'
             ' will reset the previous results. Are you '
