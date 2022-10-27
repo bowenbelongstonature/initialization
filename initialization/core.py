@@ -54,7 +54,7 @@ def _single_time_to_stable(gdir, ys):
                 (model_1.volume_m3_ts()[99]+0.000001) <0.05:
                     break
             # further runs to find the "years"
-            elif :
+            else:
                 model2 = tasks.run_random_climate(gdir, nyears=100, y0=ys, seed=1,
                                                   init_model_filesuffix='_{}'.format(str(year)),
                                                      output_filesuffix='_{}'.format(str(year+100)))
