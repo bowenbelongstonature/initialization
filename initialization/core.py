@@ -347,8 +347,8 @@ def identification(gdir, list, ys, ye, n):
                 pass
 
     # make sure that t_stag is not close to the end
-    df = gdir.read_json('diagnostics')
-    year = df['years_to_stable']
+    dfs = gdir.read_json('diagnostics')
+    year = dfs['years_to_stable']
     if t_stag>(year-50):
         t_stag = (year-50)
 
@@ -360,7 +360,7 @@ def identification(gdir, list, ys, ye, n):
                 rp = os.path.join(gdir.dir, str(ys),
                                   'model_geometry' + suffix + '.nc')
             fmod = FileModel(rp)
-            v = pd.DataFrame(fmod.volume_m3_ts()).reset_index()
+            v = pd.DataFrame(fmod.volume_m3_ts()).rename_axis('time').reset_index()
             v = v[v['time'] >= t_stag]
             v = v.assign(suffix=lambda x: suffix)
             df = df.append(v, ignore_index=True)
