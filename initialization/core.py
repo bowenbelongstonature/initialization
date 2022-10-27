@@ -112,8 +112,10 @@ def _single_calibration_run(gdir, mb_offset, ys,ye):
     except:
         try:
             fls = gdir.read_pickle('model_flowlines')
-            # run a 600 years random run with mb_offset
-            model = tasks.run_random_climate(gdir, nyears=600, y0=ys, bias=mb_offset, seed=1,
+            # run random run with mb_offset
+            df = gdir.read_json('diagnostics')
+            year = df['years_to_stable']
+            model = tasks.run_random_climate(gdir, nyears=year, y0=ys, bias=mb_offset, seed=1,
                                              init_model_fls=fls,output_filesuffix='_calibration_random_'+str(mb_offset) )
 
             # construct s_OGGM --> previous glacier will be run forward from
@@ -145,8 +147,9 @@ def _run_parallel_experiment(gdir, t0, te):
     try:
         fls = gdir.read_pickle('model_flowlines')
         # try to run random climate with temperature bias -1
-
-        model = tasks.run_random_climate(gdir, nyears=600, y0=t0, bias=0, seed=1,
+        df = gdir.read_json('diagnostics')
+        year = df['years_to_stable']
+        model = tasks.run_random_climate(gdir, nyears=year, y0=t0, bias=0, seed=1,
                                          temperature_bias=-1,
                                          init_model_fls=fls)
 
@@ -284,9 +287,10 @@ def _run_random_task(tupel, gdir, y0, mb_offset):
 
     # does file already exists?
     if not os.path.exists(path):
-
+        df = gdir.read_json('diagnostics')
+        year = df['years_to_stable']
         try:
-            tasks.run_random_climate(gdir, nyears=600, y0=y0, bias=mb_offset,
+            tasks.run_random_climate(gdir, nyears=year, y0=y0, bias=mb_offset,
                                      seed=seed, temperature_bias=temp_bias,
                                      init_model_fls=copy.deepcopy(fls),
                                      output_filesuffix=suffix)
@@ -343,8 +347,10 @@ def identification(gdir, list, ys, ye, n):
                 pass
 
     # make sure that t_stag is not close to the end
-    if t_stag>550:
-        t_stag = 550
+    df = gdir.read_json('diagnostics')
+    year = df['years_to_stable']
+    if t_stag>(year-50):
+        t_stag = (year-50)
 
     df = pd.DataFrame()
     for suffix in list['suffix']:
@@ -399,7 +405,7 @@ def find_possible_glaciers(gdir, y0, ye, n, ex_mod=None, mb_offset=0, delete=Fal
         return results
 
     # 1. Generation of possible glacier states
-    #    - Run random climate over 600 years with different temperature biases
+    #    - Run random climate with different temperature biases
     random_list = generation(gdir, y0, mb_offset)
 
     # 2. Identification of glacier candidates
