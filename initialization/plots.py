@@ -106,7 +106,7 @@ def plot_experiment(gdir, ex_mod, t0, te, plot_dir):
     fig_name = 'synthetic_experiment_'+str(t0)+'_'+gdir.rgi_id
     plt.savefig(os.path.join(plot_dir, fig_name+'.pdf'), dpi=300)
     plt.savefig(os.path.join(plot_dir, fig_name+'.png'), dpi=300)
-    plt.show()
+    #plt.show()
     #plt.close()
 
 
@@ -187,7 +187,7 @@ def plot_candidates(gdir, df, yr, step, plot_dir):
 
         plt.savefig(os.path.join(plot_dir, 'candidates3_' + str(yr) + '_' +
                                  str(gdir.rgi_id) + '.png'), dpi=300)
-        plt.show()
+        #plt.show()
 
     #plt.close()
 
@@ -392,7 +392,7 @@ def plot_fitness_values(gdir, df, ex_mod, ys,ye, plot_dir):
     fig_name = 'surface_' + str(ys) + '_' + gdir.rgi_id
     #plt.savefig(os.path.join(plot_dir, fig_name + '.pdf'), dpi=300)
     plt.savefig(os.path.join(plot_dir, fig_name + '.png'), dpi=300)
-    plt.show()
+    #plt.show()
     plt.close()
 
 
@@ -551,7 +551,7 @@ def plot_median(gdir, df, eps, ex_mod, ys, ye, plot_dir):
     fig_name = 'median_'+str(ys)+'_'+gdir.rgi_id
     plt.savefig(os.path.join(plot_dir, fig_name+'.pdf'), dpi=300)
     #plt.savefig(os.path.join(plot_dir, fig_name+'.png'), dpi=300)
-    plt.show()
+    #plt.show()
     #plt.close()
 
     return median_model
