@@ -551,7 +551,7 @@ def evaluation(gdir, cand_df, y0, ye, emod, mb_offset, delete):
     pool.join()
 
     df = pd.DataFrame()
-    prefix = 'model_geomtry'+str(y0)+'_past'
+    prefix = 'model_geometry'+str(y0)+'_past'
 
     if emod is None:
         # read experiment
