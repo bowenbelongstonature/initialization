@@ -501,7 +501,8 @@ def find_possible_glaciers(gdir, y0, ye, n, ex_mod=None, mb_offset=0, delete=Fal
                 os.rename(os.path.join(gdir.dir, file),
                           os.path.join(gdir.dir, str(y0), file))
             elif file.startswith('model_diagnostics' + (str(y0))):
-                os.remove(os.path.join(gdir.dir, file))
+                os.rename(os.path.join(gdir.dir, file),
+                          os.path.join(gdir.dir, str(y0), file))
 
     return results
 
