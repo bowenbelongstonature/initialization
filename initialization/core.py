@@ -226,7 +226,7 @@ def find_mb_offset(gdir, ys, a=-1000, b=1000):
             df = df.append(pd.Series({'mb_offset': mb_offset, 'area_diff': diff, 'error':error}),
                            ignore_index=True)
 
-            if (abs(diff) < 1e-3) or bounds[1] - bounds[0] <= 0.25:
+            if (abs(diff) < 1e-4) or (bounds[1] - bounds[0] <= 0.5 and abs(diff) < 1e-3):
                 break
 
             elif diff<0:
