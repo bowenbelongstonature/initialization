@@ -531,13 +531,13 @@ def generation(gdir, y0, mb_offset):
     return random_run_list
 
 
-def evaluation(gdir, fls_list, y0, ye, emod, mb_offset, delete):
+def evaluation(gdir, cand_df, y0, ye, emod, mb_offset, delete):
 
     """
     Creates a pd.DataFrame() containing all tested glaciers candidates in year
-    yr. Read all "model_run+str(yr)+_past*.nc" files in gdir.dir
+    yr. Read all "model_geometry+str(yr)+_past*.nc" files in gdir.dir
     :param gdir:        oggm.GlacierDirectory
-    :param fls_list:    array with tupels [suffix, fls]
+    :param cand_df:     dataframe with init_model_filesuffix and init_time
     :param y0:          int, year of searched glacier
     :param ye:          int, year of observation
     :return:
@@ -546,12 +546,12 @@ def evaluation(gdir, fls_list, y0, ye, emod, mb_offset, delete):
     # run candidates until present
     pool = Pool()
     suffix_list = pool.map(partial(_run_to_present, gdir=gdir, ys=y0,
-                                 ye=ye, mb_offset=mb_offset), fls_list)
+                                 ye=ye, mb_offset=mb_offset), cand_df.to_numpy())
     pool.close()
     pool.join()
 
     df = pd.DataFrame()
-    prefix = 'model_geometry'+str(y0)+'_past'
+    prefix = 'model_geomtry'+str(y0)+'_past'
 
     if emod is None:
         # read experiment
