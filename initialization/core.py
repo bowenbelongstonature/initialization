@@ -369,30 +369,15 @@ def identification(gdir, list, ys, ye, n):
 
     indices = []
     # find nearest glacier state for each of the n volume classes (equidistant)
-    for val in np.linspace(df.ts_section.min(), df.ts_section.max(), n):
-        index = df.iloc[(df['ts_section'] - val).abs().argsort()][:1].index[0]
+    for val in np.linspace(df.volume_m3.min(), df.volume_m3.max(), n):
+        index = df.iloc[(df['volume_m3'] - val).abs().argsort()][:1].index[0]
         if not index in indices:
             indices = np.append(indices, index)
     candidates = df.loc[indices]
     candidates = candidates.sort_values(['suffix', 'time'])
-    candidates['fls_t0'] = None
-    for suffix in candidates['suffix'].unique():
-        rp = gdir.get_filepath('model_geometry', filesuffix=suffix)
-        if not os.path.exists(rp):
-            rp = os.path.join(gdir.dir, str(ys), 'model_geometry' + suffix + '.nc')
-        fmod = FileModel(rp)
-        for i, t in candidates[candidates['suffix'] == suffix]['time'].iteritems():
-            fmod.run_until(t)
-            candidates.at[i, 'random_model_t0'] = copy.deepcopy(fmod)
-
     candidates = candidates.drop_duplicates()
-    fls_list = []
-    for i in candidates.index:
-        s = candidates.loc[int(i), 'suffix'].split('_random')[-1]
-        suffix = str(ys) + '_past' + s + '_'+str(int(candidates.loc[int(i), 'time']))
-        fls = candidates.loc[int(i), 'random_model_t0']
-        fls_list.append([suffix, fls])
-    return fls_list
+
+    return candidates[['time', 'suffix']]
 
 
 def find_possible_glaciers(gdir, y0, ye, n, ex_mod=None, mb_offset=0, delete=False):
