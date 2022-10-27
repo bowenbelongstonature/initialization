@@ -163,22 +163,23 @@ def _run_parallel_experiment(gdir, t0, te):
     except:
         print('experiment failed : ' + str(gdir.rgi_id))
 
-
-def _run_to_present(tupel, gdir, ys, ye, mb_offset):
+def _run_to_present(array, gdir, ys, ye, mb_offset):
     """
     Run glacier candidates forwards.
     """
-    suffix = tupel[0]
-    #path = gdir.get_filepath('model_geometry', filesuffix=suffix)
-    path = os.path.join(gdir.dir, str(ys), 'model_geometry' + suffix + '.nc')
+    init_yr=array[0]
+    init_filesuffix=array[1]
+
+    s = init_filesuffix.split('_random')[-1]
+    output_filesuffix = str(ys) + '_past' + s + '_'+str(int(init_yr))
+
+    path = os.path.join(gdir.dir, str(ys), 'model_geometry' + output_filesuffix + '.nc')
     # does file already exists?
     if not os.path.exists(path):
         try:
-            tasks.run_from_climate_data(gdir, ys=ys, ye=ye, bias=mb_offset,
-                                        output_filesuffix=suffix,
-                                        init_model_fls=copy.deepcopy(
-                                        tupel[1].fls))
-            return suffix
+            tasks.run_from_climate_data(gdir, ys=ys, ye=ye, bias=mb_offset, init_model_filesuffix=init_filesuffix,
+                                        init_model_yr=init_yr, output_filesuffix=output_filesuffix)
+            return output_filesuffix
         # oggm failed --> probaly "glacier exeeds boundaries"
         except:
             return None
