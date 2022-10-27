@@ -339,7 +339,7 @@ def identification(gdir, list, ys, ye, n):
                     rp = os.path.join(gdir.dir,str(ys),
                                       'model_geometry'+suffix+'.nc')
                 fmod = FileModel(rp)
-                t = _find_extrema(fmod.volume_m3_ts())
+                v = pd.DataFrame(fmod.volume_m3_ts()).rename_axis('time').reset_index()
                 if t > t_stag:
                     t_stag = t
                 i = i+1
