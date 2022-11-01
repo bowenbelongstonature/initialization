@@ -470,10 +470,7 @@ def plot_median(gdir, df, eps, ex_mod, ys, ye, plot_dir):
     df.loc[:, 'length'] = df.model.apply(lambda x: x.length_m)
     df = df.sort_values('length', ascending=False)
     l = len(df)
-    if l % 2:
-        index = int((l - 1) / 2)
-    else:
-        index = int(l / 2)
+    index = int(l / 2)
 
     median_model = deepcopy(df.iloc[index].model)
     median_model.volume_km3_ts().plot(ax=ax3, linewidth=3, label=r'$s_{'+str(ys)+'-'+str(ye)+'}^{med}$')
