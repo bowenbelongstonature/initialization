@@ -484,7 +484,7 @@ def plot_median(gdir, df, eps, ex_mod, ys, ye, plot_dir):
              linewidth=3)
 
     # min model
-    min_mod = deepcopy(df.loc[df.fitness.idxmin(), 'model'])
+    min_mod = deepcopy(df.loc[df.fitness.astype(float).idxmin(), 'model'])
     min_mod.volume_km3_ts().plot(ax=ax3, color='C1',
                                 linewidth=3, label=r'$s_{'+str(ys)+'-'+str(ye)+'}^{min}$')
     min_mod.reset_y0(ys)
