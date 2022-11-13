@@ -599,7 +599,7 @@ def evaluation(gdir, cand_df, y0, ye, emod, mb_offset, delete):
 
     if not delete:
         # save df with result models
-        path = os.path.join(gdir.dir, 'result' + str(y0) +cfg.PARAMS['baseline_climate']+'_'+cfg.PARAMS['climate_qc_months'] '.pkl')
+        path = os.path.join(gdir.dir, 'result' + str(y0) +cfg.PARAMS['baseline_climate']+'_'+cfg.PARAMS['climate_qc_months']+'.pkl')
         df.to_pickle(path, compression='gzip')
 
     return df
