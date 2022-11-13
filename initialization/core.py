@@ -383,7 +383,7 @@ def identification(gdir, list, ys, ye, n):
 
 def find_possible_glaciers(gdir, y0, ye, n, ex_mod=None, mb_offset=0, delete=False):
 
-    path = os.path.join(gdir.dir, 'result' + str(y0) + '.pkl')
+    path = os.path.join(gdir.dir, 'result' + str(y0) +cfg.PARAMS['baseline_climate']+'_'+cfg.PARAMS['climate_qc_months']+'.pkl')
 
     # if results are already there and number of candidates are the same, don't run it again
     if os.path.isfile(path):
