@@ -383,7 +383,7 @@ def identification(gdir, list, ys, ye, n):
 
 def find_possible_glaciers(gdir, y0, ye, n, ex_mod=None, mb_offset=0, delete=False):
 
-    path = os.path.join(gdir.dir, 'result' + str(y0) +cfg.PARAMS['baseline_climate']+'_'+str(cfg.PARAMS['climate_qc_months'])+'.pkl')
+    path = os.path.join(gdir.dir, 'result' + str(y0) +cfg.PARAMS['baseline_climate']+'_qc'+str(cfg.PARAMS['climate_qc_months'])+'_'+cfg.PARAMS[prcp_scaling_factor']+'.pkl')
 
     # if results are already there and number of candidates are the same, don't run it again
     if os.path.isfile(path):
@@ -599,7 +599,7 @@ def evaluation(gdir, cand_df, y0, ye, emod, mb_offset, delete):
 
     if not delete:
         # save df with result models
-        path = os.path.join(gdir.dir, 'result' + str(y0) +cfg.PARAMS['baseline_climate']+'_'+str(cfg.PARAMS['climate_qc_months'])+'.pkl')
+        path = os.path.join(gdir.dir, 'result' + str(y0) +cfg.PARAMS['baseline_climate']+'_qc'+str(cfg.PARAMS['climate_qc_months'])+'_'+cfg.PARAMS[prcp_scaling_factor']+'.pkl')
         df.to_pickle(path, compression='gzip')
 
     return df
