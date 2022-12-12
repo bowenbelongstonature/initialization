@@ -188,7 +188,7 @@ def _run_to_present(array, gdir, ys, ye, mb_offset):
         # does file contain a model?
         try:
             fmod = FileModel(path)
-            return output_suffix
+            return output_filesuffix
         except:
             return None
 
