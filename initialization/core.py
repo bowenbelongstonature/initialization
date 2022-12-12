@@ -188,7 +188,7 @@ def _run_to_present(array, gdir, ys, ye, mb_offset):
         # does file contain a model?
         try:
             fmod = FileModel(path)
-            return suffix
+            return output_suffix
         except:
             return None
 
@@ -340,7 +340,7 @@ def identification(gdir, list, ys, ye, n):
                     rp = os.path.join(gdir.dir,str(ys),
                                       'model_geometry'+suffix+'.nc')
                 fmod = FileModel(rp)
-                v = pd.DataFrame(fmod.volume_m3_ts()).rename_axis('time').reset_index()
+                t = _find_extrema(fmod.volume_m3_ts())
                 if t > t_stag:
                     t_stag = t
                 i = i+1
