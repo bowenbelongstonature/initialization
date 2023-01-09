@@ -463,7 +463,7 @@ def find_possible_glaciers(gdir, y0, ye, n, ex_mod=None, mb_offset=0, delete=Fal
 
         # delete other files
         for file in os.listdir(gdir.dir):
-            if file.startswith('model_geometry' + (str(y0))):
+            if file.startswith(''.join(['model_geometry' , str(y0)])):
                 if not file in set(save.values()):
                     os.remove(os.path.join(gdir.dir, file))
 
@@ -475,7 +475,7 @@ def find_possible_glaciers(gdir, y0, ye, n, ex_mod=None, mb_offset=0, delete=Fal
                         os.remove(file)
                     except:
                         pass
-
+            del file
     else:
 
         # move all model_run* files from year y0 to a new directory --> avoids
@@ -588,20 +588,21 @@ def evaluation(gdir, cand_df, y0, ye, emod, mb_offset, delete):
                 df = df.append({'model':rp, 'fitness':fitness, 'temp_bias': float(f.split('_')[-2]),
                                 'time': f.split('_')[-1], 'volume': fmod.volume_km3,'length': fmod.length_m,
                                 'area': fmod.area_km2,'fitness_fls':fitness_fls,},
-                               ignore_index=True)
-
+                               ignore_index=True
+        del rp,fmod, fmod_t, fitness                           
+        
         except:
 
             df = df.append({'model': None, 'fitness': None,
                             'temp_bias': float(f.split('_')[-2]),
                             'time': f.split('_')[-1], 'volume': None},ignore_index=True)
-
+        
 
     if not delete:
         # save df with result models
         path = os.path.join(gdir.dir, ''.join(['result',str(y0),cfg.PARAMS['baseline_climate'],'_qc',str(cfg.PARAMS['climate_qc_months']),'_',str(cfg.PARAMS['prcp_scaling_factor']),'.pkl']))
         df.to_pickle(path, compression='gzip')
-
+    
     return df
 
 def fitness_value_fls(model1, model2, ye):
@@ -626,11 +627,10 @@ def fitness_value_fls(model1, model2, ye):
         fitness = fitness + np.sum(
             abs(fls1[i].surface_h - fls2[i].surface_h) ** 2) + \
                     np.sum(abs(fls1[i].widths - fls2[i].widths) ** 2)
-        m = m + fls1[i].nx
+        m = m + fls1[i].nx                                
 
     fitness = fitness / m
     fitness = fitness/125
-
     return fitness
 
 
