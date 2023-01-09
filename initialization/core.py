@@ -588,7 +588,7 @@ def evaluation(gdir, cand_df, y0, ye, emod, mb_offset, delete):
                 df = df.append({'model':rp, 'fitness':fitness, 'temp_bias': float(f.split('_')[-2]),
                                 'time': f.split('_')[-1], 'volume': fmod.volume_km3,'length': fmod.length_m,
                                 'area': fmod.area_km2,'fitness_fls':fitness_fls,},
-                               ignore_index=True
+                               ignore_index=True)
         del rp,fmod, fmod_t, fitness                           
         
         except:
